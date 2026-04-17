@@ -24,7 +24,9 @@ export default function Home() {
           </p>
 
           {/* Search Bar */}
-          <SearchBar />
+          <div className="mb-16 w-full flex justify-center">
+            <SearchBar />
+          </div>
         </div>
 
         {/* Quick Access Grid */}
