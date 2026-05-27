@@ -4,13 +4,25 @@ import React, { useState, useEffect } from "react";
 import { Search, Plus, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { unifiedSearch, SearchResult } from "@/lib/services/search";
+import { getRecentSearches } from "@/app/actions/search";
 
-export default function SearchBar() {
+export default function SearchBar({ initialQuery = "" }: { initialQuery?: string }) {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+  // Fetch recent searches when the component mounts
+  useEffect(() => {
+    getRecentSearches().then(setRecentSearches).catch(console.error);
+  }, []);
+
+  // Sync state with prop changes (e.g. when navigating back/forward)
+  useEffect(() => {
+    setSearchQuery(initialQuery);
+  }, [initialQuery]);
 
   useEffect(() => {
     const timer = setTimeout(async () => {
@@ -49,7 +61,7 @@ export default function SearchBar() {
             setShowSuggestions(e.target.value.length > 0);
           }}
           onFocus={() => {
-            if (searchQuery.length > 0) setShowSuggestions(true);
+            setShowSuggestions(true);
           }}
           onBlur={() => {
             setTimeout(() => setShowSuggestions(false), 200);
@@ -75,30 +87,62 @@ export default function SearchBar() {
       {showSuggestions && (
         <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden text-left animate-in slide-in-from-top-2 fade-in duration-200">
           <div className="px-5 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Suggested Results</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              {searchQuery.length === 0 ? "Recent Searches" : "Suggested Results"}
+            </span>
             <span className="text-xs text-slate-400">Press Enter to search</span>
           </div>
           <div className="py-2">
-            {suggestions.length > 0 ? (
-              suggestions.map((item, idx) => (
-                <button 
-                  key={idx} 
-                  onClick={() => router.push(`/search?q=${encodeURIComponent(item.title)}`)}
-                  className="w-full flex items-center justify-between px-5 py-3 hover:bg-slate-50 transition-colors group"
-                >
-                  <div className="flex items-center gap-3">
+            {searchQuery.length === 0 ? (
+              // Display Recent Searches
+              recentSearches.length > 0 ? (
+                recentSearches.map((term, idx) => (
+                  <button 
+                    key={`history-${idx}`} 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSearchQuery(term);
+                      router.push(`/search?q=${encodeURIComponent(term)}`);
+                      setShowSuggestions(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-5 py-3 hover:bg-slate-50 transition-colors group"
+                  >
                     <Search className="w-4 h-4 text-slate-300 group-hover:text-[#1E88E5]" />
-                    <span className="text-slate-700 font-medium truncate max-w-[300px]">{item.title}</span>
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 bg-slate-100 text-slate-500 rounded-md">
-                    {item.category}
-                  </span>
-                </button>
-              ))
+                    <span className="text-slate-700 font-medium">{term}</span>
+                  </button>
+                ))
+              ) : (
+                <div className="px-5 py-8 text-center text-sm text-slate-400 italic">
+                  No recent searches.
+                </div>
+              )
             ) : (
-              <div className="px-5 py-8 text-center">
-                <p className="text-sm text-slate-400 italic">No suggestions found. Press enter to search.</p>
-              </div>
+              // Display Live Suggestions
+              suggestions.length > 0 ? (
+                suggestions.map((item, idx) => (
+                  <button 
+                    key={`suggestion-${idx}`} 
+                    onClick={() => {
+                      setSearchQuery(item.title);
+                      router.push(`/search?q=${encodeURIComponent(item.title)}`);
+                      setShowSuggestions(false);
+                    }}
+                    className="w-full flex items-center justify-between px-5 py-3 hover:bg-slate-50 transition-colors group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Search className="w-4 h-4 text-slate-300 group-hover:text-[#1E88E5]" />
+                      <span className="text-slate-700 font-medium truncate max-w-[300px]">{item.title}</span>
+                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 bg-slate-100 text-slate-500 rounded-md">
+                      {item.category}
+                    </span>
+                  </button>
+                ))
+              ) : (
+                <div className="px-5 py-8 text-center">
+                  <p className="text-sm text-slate-400 italic">No suggestions found. Press enter to search.</p>
+                </div>
+              )
             )}
           </div>
         </div>

@@ -4,8 +4,13 @@ import Footer from "@/components/Footer";
 import SearchResults from "@/components/SearchResults";
 import SearchBar from "@/components/SearchBar";
 
-export default function SearchPage({ searchParams }: { searchParams: { q?: string } }) {
-  const query = searchParams.q || "";
+export default async function SearchPage({ 
+  searchParams 
+}: { 
+  searchParams: Promise<{ q?: string }> 
+}) {
+  const params = await searchParams;
+  const query = params.q || "";
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 selection:bg-[#1E88E5]/20">
@@ -16,7 +21,7 @@ export default function SearchPage({ searchParams }: { searchParams: { q?: strin
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center gap-6">
           <div className="flex-grow max-w-2xl">
             <Suspense fallback={<div className="h-16 bg-slate-100 animate-pulse rounded-2xl" />}>
-               <SearchBar />
+               <SearchBar initialQuery={query} />
             </Suspense>
           </div>
           <div className="hidden lg:block text-slate-400 text-sm italic">

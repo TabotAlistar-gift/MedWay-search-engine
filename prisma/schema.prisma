@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  name          String?
+  passwordHash  String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  searchHistory SearchQuery[]
+  savedInsights SavedInsight[]
+}
+
+// Tracks what users are searching for
+model SearchQuery {
+  id           String   @id @default(uuid())
+  query        String
+  userId       String?  // Optional: Allows tracking anonymous searches as well
+  user         User?    @relation(fields: [userId], references: [id])
+  createdAt    DateTime @default(now())
+
+  // Analytics for the search engine
+  resultsCount Int?     // How many results were found
+  category     String?  // e.g., "Drug", "Research", "Condition"
+}
+
+// Allows users to bookmark specific results from the search engine
+model SavedInsight {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  // Data about the saved medical item
+  insightId   String   // The external ID (e.g., from PubMed or openFDA)
+  title       String
+  description String?
+  category    String   // "Drug", "Condition", "Research"
+  source      String   // "openFDA", "PubMed", etc.
+  url         String?  // External link if available
+  
+  createdAt   DateTime @default(now())
+
+  // A user shouldn't be able to save the exact same insight twice
+  @@unique([userId, insightId])
+}
+
+// Curated medical knowledge base
+model MedicalKnowledge {
+  id            String   @id @default(uuid())
+  title         String   @unique
+  description   String   // Short summary for search results
+  content       String   // Full detailed content (supports markdown)
+  category      String   // "Disease", "Drug", "Anatomy", "History", "Treatment", "Fact"
+  source        String   // "MedWay Curated", "Mayo Clinic", etc.
+  relatedTopics String?  // Comma-separated list of related terms
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([title])
+  @@index([category])
+}

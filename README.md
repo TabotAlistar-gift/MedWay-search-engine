@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MedWay: Authoritative Medical Knowledge Platform
 
-## Getting Started
+MedWay is a specialized medical search engine designed to provide users with accurate, verified, and well-structured medical information from trusted global sources.
 
-First, run the development server:
+## 🚀 Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+In an era of medical misinformation and "Cyberchondria," MedWay acts as a clinical filter, prioritizing reliability over popularity. It aggregates data from the world's leading health institutions to provide a direct path to verified knowledge.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Unified Data Integration**: Real-time insights from WHO, CDC, Mayo Clinic, PubMed, and OpenFDA.
+- **Structured Overviews**: Intelligent parsing of symptoms, causes, and treatments.
+- **Smart Natural Language Search**: Handles complex medical queries using simple language.
+- **Personalized Dashboard**: Securely save articles, track symptom checks, and manage search history.
+- **High-Authority Ranking**: Prioritizes institutional clinical data over generic SEO-ranked blogs.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Technology Stack
 
-## Learn More
+- **Frontend**: Next.js 15+ (App Router), TypeScript, Tailwind CSS, Framer Motion.
+- **Backend**: Prisma ORM with SQLite (Development) / PostgreSQL (Production).
+- **APIs**: National Center for Biotechnology Information (NCBI), Center for Disease Control (CDC), Wikipedia API, OpenFDA.
 
-To learn more about Next.js, take a look at the following resources:
+## 🚦 Getting Started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Prerequisites
+- Node.js 18+
+- pnpm / npm / yarn
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Installation
 
-## Deploy on Vercel
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/medway.git
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Set up the database:
+   ```bash
+   pnpm prisma generate
+   pnpm prisma db push
+   ```
+
+4. Run the development server:
+   ```bash
+   pnpm dev
+   ```
+
+Open [http://localhost:3000](http://localhost:3000) to explore the platform.
+
+## 📚 References
+
+- [World Health Organization (WHO)](https://www.who.int)
+- [Mayo Clinic](https://www.mayoclinic.org)
+- [CDC Official Website](https://www.cdc.gov)
+- [PubMed (NCBI)](https://pubmed.ncbi.nlm.nih.gov)
+- [OpenFDA](https://open.fda.gov)
+
+---
+*Developed as a Final Project for Medical Information Retrieval.*
+
